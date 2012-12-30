@@ -4,18 +4,30 @@
 #include <GLWT/glwt.h>
 #include <glwt_internal.h>
 
+#ifdef _WIN32
+#include <malloc.h>
+#ifndef alloca
+#define alloca _alloca
+#endif
+#else
+#include <alloca.h>
+#endif
+
 struct glwt glwt;
 
 int glwtErrorPrintf(const char *fmt, ...)
 {
+    char *buffer;
+    int size, val;
+
     va_list ap;
     va_start(ap, fmt);
-    int size = vsnprintf(NULL, 0, fmt, ap);
+    size = vsnprintf(NULL, 0, fmt, ap);
     va_end(ap);
 
-    char buffer[size+1];
+    buffer = (char *)alloca(size+1);
     va_start(ap, fmt);
-    int val = vsnprintf(buffer, size+1, fmt, ap);
+    val = vsnprintf(buffer, size+1, fmt, ap);
     va_end(ap);
 
     if(glwt.error_callback)

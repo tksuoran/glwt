@@ -59,27 +59,30 @@ static void window_callback(GLWTWindow *window, const GLWTWindowEvent *event, vo
 
 int main(int argc, char *argv[])
 {
-    (void)argc; (void)argv;
     int err = -1;
 
     GLWTConfig glwt_config = {
-        .red_bits = 0,
-        .green_bits = 0,
-        .blue_bits = 0,
-        .alpha_bits = 0,
-        .depth_bits = 0,
-        .stencil_bits = 0,
-        .samples = 0,
-        .sample_buffers = 0,
-        .api = GLWT_API_ANY | GLWT_PROFILE_DEBUG,
-        .api_version_major = 0,
-        .api_version_minor = 0
+        /*.red_bits =*/ 0,
+        /*.green_bits =*/ 0,
+        /*.blue_bits =*/ 0,
+        /*.alpha_bits =*/ 0,
+        /*.depth_bits =*/ 0,
+        /*.stencil_bits =*/ 0,
+        /*.samples =*/ 0,
+        /*.sample_buffers =*/ 0,
+        /*.api =*/ GLWT_API_ANY | GLWT_PROFILE_DEBUG,
+        /*.api_version_major =*/ 0,
+        /*.api_version_minor =*/ 0
     };
+
+    int width, height;
+    GLWTWindow *window = 0;
+
+    (void)argc; (void)argv;
 
     if(glwtInit(&glwt_config, error_callback, NULL) != 0)
         goto error;
 
-    GLWTWindow *window = 0;
     if(!(window = glwtWindowCreate("", 400, 300, NULL, window_callback, NULL)))
         goto error;
 
@@ -89,7 +92,6 @@ int main(int argc, char *argv[])
     glwtMakeCurrent(window);
     glwtSwapInterval(window, 1);
 
-    int width, height;
     glwtWindowGetSize(window, &width, &height);
     printf("Window size: %d x %d\n", width, height);
 

@@ -31,6 +31,11 @@ int glwtInit(
     void (*error_callback)(const char *msg, void *userdata),
     void *userdata)
 {
+    WCHAR klassname[] = { 'G', 'L', 'W', 'T', 0 };
+    int fmt;
+    WNDCLASSEXW klass;
+    PIXELFORMATDESCRIPTOR pfd;
+
     glwt.error_callback = error_callback;
     glwt.userdata = userdata;
 
@@ -41,9 +46,6 @@ int glwtInit(
         goto error;
     }
 
-    WCHAR klassname[] = { 'G', 'L', 'W', 'T', 0 };
-
-    WNDCLASSEXW klass;
     klass.cbSize = sizeof(WNDCLASSEXW);
     klass.style = CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
     klass.lpfnWndProc = &glwtWin32WndProc;
@@ -51,7 +53,7 @@ int glwtInit(
     klass.cbWndExtra = sizeof(GLWTWindow*);
     klass.hInstance = glwt.win32.hinstance;
     klass.hIcon = 0;
-    klass.hCursor = 0;
+    klass.hCursor = LoadCursor( NULL, IDC_ARROW );
     klass.hbrBackground = 0;
     klass.lpszMenuName = 0;
     klass.lpszClassName = klassname;
@@ -61,14 +63,13 @@ int glwtInit(
     if(!glwt.win32.classatom)
         glwtWin32Error("RegisterWindowClassExW failed");
 
-    intptr_t classptr = glwt.win32.classatom;
     glwt.win32.dummy_hwnd = CreateWindowExW(
         0,
-        (LPCWSTR)classptr,
-        L"",    // window title
+        (LPCWSTR)(intptr_t)glwt.win32.classatom,
+        L"",    /* window title */
         WS_POPUP | WS_DISABLED,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        100, 100, // width, height
+        100, 100, /* width, height */
         0,
         0,
         glwt.win32.hinstance,
@@ -81,7 +82,6 @@ int glwtInit(
         return -1;
     }
 
-    PIXELFORMATDESCRIPTOR pfd;
     memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
     pfd.nVersion = 1;
@@ -89,7 +89,7 @@ int glwtInit(
     pfd.iPixelType = PFD_TYPE_RGBA;
     pfd.iLayerType = PFD_MAIN_PLANE;
 
-    int fmt = ChoosePixelFormat(glwt.win32.dummy_hdc, &pfd);
+    fmt = ChoosePixelFormat(glwt.win32.dummy_hdc, &pfd);
     if(!fmt)
     {
         glwtWin32Error("ChoosePixelFormat failed");
@@ -129,8 +129,8 @@ void glwtQuit()
     if(glwt.win32.dummy_hwnd)
         DestroyWindow(glwt.win32.dummy_hwnd);
 
-    intptr_t classptr = glwt.win32.classatom;
-    if(classptr && !UnregisterClassW((LPCWSTR)classptr, glwt.win32.hinstance))
+    if(glwt.win32.classatom &&
+        !UnregisterClassW((LPCWSTR)(intptr_t)glwt.win32.classatom, glwt.win32.hinstance))
         glwtWin32Error("UnregisterClassW failed");
 
     memset(&glwt, 0, sizeof(struct glwt));

@@ -2,17 +2,20 @@
 
 int glwtWindowCreateEGL(GLWTWindow *win, GLWTWindow *share)
 {
+    int surface_attribs[] = {
+        EGL_NONE
+    };
+    int context_attribs[] = {
+        EGL_CONTEXT_CLIENT_VERSION, glwt.api_version_major != 0 ? glwt.api_version_major : 1,
+        EGL_NONE
+    };
+
     if(!eglBindAPI((glwt.api & GLWT_API_MASK) == GLWT_API_OPENGL ?
         EGL_OPENGL_API : EGL_OPENGL_ES_API))
     {
         glwtErrorPrintf("eglBindAPI failed");
         goto error;
     }
-
-    int context_attribs[] = {
-        EGL_CONTEXT_CLIENT_VERSION, glwt.api_version_major != 0 ? glwt.api_version_major : 1,
-        EGL_NONE
-    };
 
     win->egl.context = eglCreateContext(
         glwt.egl.display,
@@ -24,10 +27,6 @@ int glwtWindowCreateEGL(GLWTWindow *win, GLWTWindow *share)
         glwtErrorPrintf("eglCreateContext failed");
         goto error;
     }
-
-    int surface_attribs[] = {
-        EGL_NONE
-    };
 
     win->egl.surface = eglCreateWindowSurface(
         glwt.egl.display,
