@@ -1,4 +1,5 @@
 #include <glwt_internal.h>
+#include <stdlib.h>
 
 GLWTWindow *glwtWindowCreate(
     const char *title,
@@ -7,20 +8,25 @@ GLWTWindow *glwtWindowCreate(
     void (*win_callback)(GLWTWindow *window, const GLWTWindowEvent *event, void *userdata),
     void *userdata)
 {
-    GLWTWindow *win= calloc(1, sizeof(struct GLWTWindow));
-    if(!win)
+    PIXELFORMATDESCRIPTOR pfd;
+    RECT rect;
+    int style;
+    int exstyle;
+    WCHAR nullterm;
+    GLWTWindow *win;
+
+    if(!(win = calloc(1, sizeof(struct GLWTWindow))))
         return 0;
 
     win->win_callback = win_callback;
     win->userdata = userdata;
 
-    RECT rect;
     rect.left = rect.top = 0;
     rect.right = width;
     rect.bottom = height;
 
-    int style = WS_OVERLAPPEDWINDOW | WS_THICKFRAME;
-    int exstyle = WS_EX_OVERLAPPEDWINDOW;
+    style = WS_OVERLAPPEDWINDOW | WS_THICKFRAME;
+    exstyle = WS_EX_OVERLAPPEDWINDOW;
 
     if(!AdjustWindowRectEx(&rect, style, 0, exstyle))
     {
@@ -28,11 +34,10 @@ GLWTWindow *glwtWindowCreate(
         goto error;
     }
 
-    WCHAR nullterm = 0;
-    intptr_t classptr = glwt.win32.classatom;
+    nullterm = 0;
     win->win32.hwnd = CreateWindowExW(
         exstyle,
-        (LPCWSTR)classptr,
+        (LPCWSTR)(intptr_t)glwt.win32.classatom,
         &nullterm,  // window title
         style,
         CW_USEDEFAULT, CW_USEDEFAULT,
@@ -56,7 +61,6 @@ GLWTWindow *glwtWindowCreate(
         goto error;
     }
 
-    PIXELFORMATDESCRIPTOR pfd;
     if(!SetPixelFormat(win->win32.hdc, glwt.win32.pixel_format, &pfd))
     {
         glwtWin32Error("SetPixelFormat failed");

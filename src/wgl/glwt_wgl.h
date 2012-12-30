@@ -5,6 +5,7 @@
 
 struct glwt_wgl
 {
+    int dummy;
 };
 
 struct glwt_window_wgl
