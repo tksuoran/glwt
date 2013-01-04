@@ -35,7 +35,9 @@ int glwtWindowCreateEGL(GLWTWindow *win, GLWTWindow *share)
 #ifdef GLWT_glwt_x11_h
         win->x11.window,
 #elif defined(GLWT_glwt_rpi_h)
-	&(win->rpi.nativewindow),
+        &(win->rpi.nativewindow),
+#elif defined(GLWT_glwt_win32_h)
+        win->win32.hwnd,
 #else
 #error EGL: unsupported windowing API
 #endif

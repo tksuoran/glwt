@@ -64,12 +64,17 @@ int glwtInitEGL(const GLWTConfig *config)
         goto error;
     }
 
-#ifdef GLWT_glwt_x11_h
-    if(!eglGetConfigAttrib(glwt.egl.display, glwt.egl.config, EGL_NATIVE_VISUAL_ID, &glwt.x11.visual_id))
+    int visual_id = 0;
+    if(!eglGetConfigAttrib(glwt.egl.display, glwt.egl.config, EGL_NATIVE_VISUAL_ID, &visual_id))
     {
         glwtErrorPrintf("eglGetConfigAttrib failed");
         goto error;
     }
+
+#if defined(GLWT_glwt_x11_h)
+    glwt.x11.visual_id = visual_id;
+#elif defined(GLWT_glwt_win32_h)
+    glwt.win32.pixel_format = visual_id;
 #endif
 
     return 0;
