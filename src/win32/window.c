@@ -19,6 +19,8 @@ GLWTWindow *glwtWindowCreate(
     if(!(win = calloc(1, sizeof(struct GLWTWindow))))
         return 0;
 
+    win->win32.hover = 0;
+    win->closed = 0;
     win->win_callback = win_callback;
     win->userdata = userdata;
 
@@ -109,5 +111,24 @@ void glwtWindowShow(GLWTWindow *win, int show)
 
 void glwtWindowSetTitle(GLWTWindow *win, const char *title)
 {
-    (void)win; (void)title;
+    WCHAR *buffer;
+    DWORD len;
+
+    if((len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, title, -1, NULL, 0)) == 0)
+    {
+        glwtWin32Error("MultiByteToWideChar failed");
+        return;
+    }
+
+    buffer = alloca(sizeof(WCHAR) * (len+1));
+
+    if((len = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, title, -1, buffer, len)) == 0)
+    {
+        glwtWin32Error("MultiByteToWideChar failed");
+        return;
+    }
+
+    buffer[len] = 0;
+
+    SetWindowTextW(win->win32.hwnd, buffer);
 }

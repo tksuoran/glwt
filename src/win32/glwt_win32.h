@@ -6,6 +6,8 @@
 #endif
 #include <windows.h>
 
+#include <win32/keymap.h>
+
 struct glwt_win32
 {
     HINSTANCE hinstance;
@@ -13,12 +15,14 @@ struct glwt_win32
     HWND dummy_hwnd;
     HDC dummy_hdc;
     int pixel_format;
+    struct keymap keymap;
 };
 
 struct glwt_window_win32
 {
     HWND hwnd;
     HDC hdc;
+    int hover;
 };
 
 void glwtWin32Error(const char *msg);
