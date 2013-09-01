@@ -202,6 +202,14 @@ LRESULT CALLBACK glwtWin32WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lP
                     break;
                 return 0;
 
+            /* Disable Windows menu open from keyboard */
+            case WM_SYSCOMMAND:
+            {
+                if((wParam & 0xfff0) == SC_KEYMENU)
+                    return 0;
+                break;
+            }
+
             case WM_LBUTTONUP:
             case WM_LBUTTONDOWN:
             case WM_MBUTTONUP:

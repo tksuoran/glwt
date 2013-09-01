@@ -27,7 +27,7 @@ GLWTWindow *glwtWindowCreate(
     rect.right = width;
     rect.bottom = height;
 
-    style = WS_OVERLAPPEDWINDOW | WS_THICKFRAME;
+    style = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME | WS_MINIMIZEBOX | WS_MAXIMIZEBOX;
     exstyle = WS_EX_OVERLAPPEDWINDOW;
 
     if(!AdjustWindowRectEx(&rect, style, 0, exstyle))
