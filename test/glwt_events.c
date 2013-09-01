@@ -16,9 +16,9 @@ static void error_callback(const char *msg, void *userdata)
 
 static void window_callback(GLWTWindow *window, const GLWTWindowEvent *event, void *userdata)
 {
+    double time = glwtGetTime();
     (void)window;
     (void)userdata;
-    double time = glwtGetTime();
 
     switch(event->type)
     {
